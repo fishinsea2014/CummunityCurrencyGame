@@ -15,7 +15,7 @@ RUN dotnet build "CommunityCurrencyGame.csproj" -c Release -o /app/build
 
 FROM build AS publish
 # Install npm
-RUN curl -sl https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 RUN dotnet publish "CommunityCurrencyGame.csproj" -c Release -o /app/publish
 

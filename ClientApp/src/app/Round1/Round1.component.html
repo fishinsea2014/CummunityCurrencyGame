@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="top">
+    <div class="players">
+      <ng-container *ngFor="let item of members; let i = index">
+        <button mat-raised-button (click)="selectPlayer($event,i)" id="i">
+          {{item.Occupation}}<br>
+          Saving: {{item.Saving}} <br>
+          Products:
+          <ng-container *ngFor="let p of item.Products">
+            {{p.Name}} ,
+          </ng-container><br>
+          Bought Products:
+          <ng-container *ngFor="let p of item.BoughtProducts">
+            {{p.Name}} ,
+          </ng-container>
+
+        </button>
+        <!-- <app-game-player [name]="item.Occupation"
+                         [saving]="item.Saving"
+                         (click)="selectPlayer($event)"
+                         id="item.Occupation"
+                         ></app-game-player> -->
+        <!-- <mat-card  class="player">{{item.Occupation}}</mat-card> -->
+      </ng-container>
+    </div>
+  </div>
+  <div class="middle">
+    <mat-card class="lender">
+      <mat-card-title>Money Lender</mat-card-title>
+      <mat-card-content>
+        Saving: {{moneyLender.Saving}} 
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="board">
+      <mat-card-title>Board<br>
+        Player: {{curMember==null?"Please select a player" : curMember.Occupation}}</mat-card-title>
+      <mat-card-content>
+        <form [formGroup]="tradeForm" (ngSubmit)="buy(tradeForm)">
+          <ng-container *ngFor="let item of [1,2]">
+            <mat-list>
+              <mat-list-item id="product{{item}}">
+                <mat-select formControlName="product{{item}}" (selectionChange)="getSelectedPrice($event,item)">
+                  <mat-option *ngFor="let p of products" value="{{p.Name}}" placehold="Select a product">
+                    {{p.Name}}
+                  </mat-option> 
+                </mat-select>
+                <p id="price{{item}}"></p>
+              </mat-list-item>
+            </mat-list>
+          </ng-container>
+          <button mat-raised-button color="warn" >Confirm Buy</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="outsider">
+      <mat-card-title>Outsider</mat-card-title>
+      <mat-card-content>
+        Saving: {{outsider.Saving}} <br>
+
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-title>Merchant</mat-card-title>
+      <mat-card-content>
+        Saving: {{merchant.Saving}} <br>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="bottom">
+
+  </div>
+</div>

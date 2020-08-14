@@ -1,0 +1,79 @@
+.container {
+    width: 100 rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 5px;
+    background-color: rgb(216, 230, 230);
+    
+}
+
+
+.top {
+    width: 100%;
+    /* height: 300 px; */
+    line-height: 30 rem;
+    background-color: #2fa8ec;
+    font-size: 30px;
+    line-height: 70px;
+}
+
+.middle{
+    height: 40rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.bottom {
+    flex: 1;
+    height: 40rem;
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+
+.board-up{
+    width: 100%;
+    height: 40%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: space-between;
+    flex: 1;
+}
+
+.board-down{
+    width: 100%;
+    height: 60%;
+    background-color: peru;
+    flex-shrink:0;
+    flex-grow: 0;
+}
+.players{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+
+}
+
+.player{
+    height: 50%;
+    margin: 5px;
+    flex: 1 200px;
+}
+
+.lender, .outside{
+    width: 25%;
+}
+
+.board{
+    flex:1;
+    height: 100%;
+    flex:2;
+}
