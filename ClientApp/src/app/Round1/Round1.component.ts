@@ -15,6 +15,7 @@ import { TradeRule } from '../Entities/TradeRule';
 export class Round1Component implements OnInit {
 
   _tradeRules:TradeRule[];
+  _activeButtonId : number = -1;
   tradeForm:FormGroup;
   p_dress : Product = {
     Name: "dress",
@@ -48,7 +49,7 @@ export class Round1Component implements OnInit {
         },        
       ],
       Saving : 50000,
-      IsActive : false,
+      isDealDone : false,
       BoughtProducts:[],
 
     },
@@ -61,7 +62,7 @@ export class Round1Component implements OnInit {
       ],
       BoughtProducts:[],
       Saving : 100000,
-      IsActive : false
+      isDealDone : false
     },
     {
       Occupation:"RiceFarmer",
@@ -74,26 +75,35 @@ export class Round1Component implements OnInit {
         },        
       ],
       Saving : -50000,
-      IsActive : false,
+      isDealDone : false,
       BoughtProducts:[],
 
     },
 
   ];
-  products:Product[] = null;  
+  productsToChoose:String[] = null;  
   constructor(private productService:ProductService,
               private tradeRules:RulesService,
               private fb:FormBuilder
     ) {
       this._tradeRules=tradeRules.getAllRules();
-    this.products = productService.GetProducts();
+    this.productsToChoose = tradeRules.getProductsToChoose();
     this.tradeForm = this.fb.group({
       product1: new FormControl('',[
         Validators.required,
       ]),      
       product2: new FormControl('',[
         Validators.required,
+      ]),   
+      product3: new FormControl('',[
+        Validators.required,
       ]),      
+      product4: new FormControl('',[
+        Validators.required,
+      ]),
+      product5: new FormControl('',[
+        Validators.required,
+      ]) 
     })
   }
 
@@ -101,11 +111,12 @@ export class Round1Component implements OnInit {
   }
 
   selectPlayer(event:any,index:number){
+    this._activeButtonId = index;
     console.log(event.target + index);
     this.curMember=this.members[index];
     this.curMemberId = index;
     console.log(this.curMember);
-    console.log(this.products);
+    console.log(this.productsToChoose);
     //TODO:disable other players' button
   }
 
@@ -150,7 +161,10 @@ export class Round1Component implements OnInit {
       }
     })
 
-    //TODO: Disable current user's button
+    //Disable current user's button
+    this.members[this._activeButtonId].isDealDone = true;
+    //Releas other buttons
+    this._activeButtonId = -1;
     //TODO: Popup a modal to display the transactions that occured automaticlly according to the rules.
   }
   upateSellerSaving(productName: string, sellerName: string) {
@@ -190,8 +204,7 @@ export class Round1Component implements OnInit {
         seller=r.Seller;
         agentBuyPrice = r.Price;
       }
-    });   
-     
+    });        
     
     this.members.forEach(m =>{
       if (m.Occupation == seller) {
@@ -213,8 +226,8 @@ export class Round1Component implements OnInit {
     document.getElementById("price"+elementId).innerText = this.getMemberBoughtItemPrice(e.value)+"";
   }
 
-  
-
-  
-
+  //Cancel current deal
+  cancelDeal(){
+    this._activeButtonId = -1;
+  }
 }
