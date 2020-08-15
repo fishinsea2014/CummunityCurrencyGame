@@ -3,4 +3,5 @@ export class TradeRule {
     Seller:string;
     Buyer?:string;
     Price:number;
+    CcPrice?:number;
 }

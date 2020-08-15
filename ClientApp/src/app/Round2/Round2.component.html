@@ -1,3 +1,80 @@
-<p>
-  Round2 works!
-</p>
+<div class="container">
+  <div class="page-title"> <h1>Round2</h1></div>
+  <div class="top">
+    <div class="players">
+      <ng-container *ngFor="let item of _activePlayers; let i = index">
+        <button mat-raised-button class="player"
+          (click)="selectPlayer($event,i)" 
+          id="i"           
+          [disabled] = "(_activeButtonId==-1 && !item.isDealDone) ? false :(item.isDealDone || !(_activeButtonId==i))"
+        >
+        <!-- logic of disable button: 1. is deal done 2. not selected -->
+
+        <strong>{{item.Occupation}}</strong><br>
+          Balance: {{item.Saving}} <br>
+          Products:
+          <ng-container *ngFor="let p of item.Products">
+            {{p}} ,
+          </ng-container><br>
+          Bought Products:
+          <ng-container *ngFor="let p of item.BoughtProducts">
+            {{p.Name}} ,
+          </ng-container>
+
+        </button>
+        
+      </ng-container>
+    </div>
+  </div>
+  <div class="middle">
+    <mat-card class="lender">
+      <mat-card-title>Money Lender</mat-card-title>
+      <mat-card-content>
+        Saving: 500000 
+        <mat-divider></mat-divider>
+        Balance: {{_moneyLenderBalance}}
+        <mat-divider></mat-divider>
+        <button (click)="completeRound1()" mat-raised-button color="accent">Complete Round 1</button>
+        
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="board">
+      <mat-card-title>Board<br>
+        Player: {{curMember==null?"Please select a player" : curMember.Occupation}}</mat-card-title>
+      <mat-card-content>
+        <form [formGroup]="tradeForm" (ngSubmit)="buy(tradeForm)">
+          <ng-container *ngFor="let item of [1,2,3,4,5]">
+            <mat-list>
+              <mat-list-item id="product{{item}}">
+                <mat-select formControlName="product{{item}}" (selectionChange)="getSelectedPrice($event,item)">
+                  <mat-option *ngFor="let p of productsToChoose" value="{{p}}" placehold="Select a product">
+                    {{p}}
+                  </mat-option> 
+                </mat-select>
+                <p id="price{{item}}"></p>
+              </mat-list-item>
+            </mat-list>
+          </ng-container>
+          <button mat-raised-button color="warn" >Confirm Buy</button>          
+        </form>
+        <button mat-raised-button (click)="cancelDeal()" color="basic" >cancel</button>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="outsider">
+      <mat-card-title>Outsider</mat-card-title>
+      <mat-card-content>
+        Balance: {{outsider.Saving}} <br>
+
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-title>Merchant</mat-card-title>
+      <mat-card-content>
+        Balance: {{merchant.Saving}} <br>
+
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div class="bottom">
+
+  </div>
+</div>
