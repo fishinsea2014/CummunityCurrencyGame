@@ -1,7 +1,7 @@
 <div class="container">
   <div class="top">
     <div class="players">
-      <ng-container *ngFor="let item of members; let i = index">
+      <ng-container *ngFor="let item of _activePlayers; let i = index">
         <button mat-raised-button class="player"
           (click)="selectPlayer($event,i)" 
           id="i"           
@@ -13,7 +13,7 @@
           Saving: {{item.Saving}} <br>
           Products:
           <ng-container *ngFor="let p of item.Products">
-            {{p.Name}} ,
+            {{p}} ,
           </ng-container><br>
           Bought Products:
           <ng-container *ngFor="let p of item.BoughtProducts">

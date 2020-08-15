@@ -4,6 +4,7 @@ import { ProductService } from '../Services/Product.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { RulesService } from '../Services/Rules.service';
 import { TradeRule } from '../Entities/TradeRule';
+import { MemberService } from '../Services/Member.service';
 
 
 
@@ -39,55 +40,18 @@ export class Round1Component implements OnInit {
   curMember:Member= null;
   curMemberId:number = -1;
   
-  members:Member[] =
-  [
-    {
-      Occupation:"Tailor",
-      Products : [
-        {
-          Name: "dress",
-        },        
-      ],
-      Saving : 50000,
-      isDealDone : false,
-      BoughtProducts:[],
-
-    },
-    {
-      Occupation:"VegetableFarmer",
-      Products : [
-        {
-          Name: "vegetables",
-        }        
-      ],
-      BoughtProducts:[],
-      Saving : 100000,
-      isDealDone : false
-    },
-    {
-      Occupation:"RiceFarmer",
-      Products : [
-        {
-          Name: "rice",
-        },
-        {
-          Name: "localTobacco",
-        },        
-      ],
-      Saving : -50000,
-      isDealDone : false,
-      BoughtProducts:[],
-
-    },
-
-  ];
+  _activePlayers:Member[] =null;
   productsToChoose:String[] = null;  
   constructor(private productService:ProductService,
-              private tradeRules:RulesService,
-              private fb:FormBuilder
-    ) {
-      this._tradeRules=tradeRules.getAllRules();
-    this.productsToChoose = tradeRules.getProductsToChoose();
+              private tradeRulesService:RulesService,
+              private memberService:MemberService,
+              private fb:FormBuilder) 
+  {
+    this._tradeRules=tradeRulesService.getAllRules();
+    console.log(this._tradeRules);
+    this._activePlayers = memberService.getActivePlayers();
+    this.productsToChoose = tradeRulesService.getProductsToChoose();
+    
     this.tradeForm = this.fb.group({
       product1: new FormControl('',[
         Validators.required,
@@ -112,11 +76,8 @@ export class Round1Component implements OnInit {
 
   selectPlayer(event:any,index:number){
     this._activeButtonId = index;
-    console.log(event.target + index);
-    this.curMember=this.members[index];
+    this.curMember=this._activePlayers[index];
     this.curMemberId = index;
-    console.log(this.curMember);
-    console.log(this.productsToChoose);
     //TODO:disable other players' button
   }
 
@@ -130,7 +91,6 @@ export class Round1Component implements OnInit {
     return price;
   }
   buy(tradeForm){
-    console.log(tradeForm.value);
     var boughtItems = tradeForm.value;
     let p1:Product = {
       Name:boughtItems.product1,
@@ -140,35 +100,55 @@ export class Round1Component implements OnInit {
       Name:boughtItems.product2,
       BuyingPrice:this.getMemberBoughtItemPrice(boughtItems.product2)
     } 
+    let p3:Product = {
+      Name:boughtItems.product3,
+      BuyingPrice:this.getMemberBoughtItemPrice(boughtItems.product3)
+    } 
+    let p4:Product = {
+      Name:boughtItems.product4,
+      BuyingPrice:this.getMemberBoughtItemPrice(boughtItems.product4)
+    } 
+    let p5:Product = {
+      Name:boughtItems.product5,
+      BuyingPrice:this.getMemberBoughtItemPrice(boughtItems.product5)
+    } 
+    let boughtProducts = [p1,p2,p3,p4,p5]
+
     console.log(this.curMember.Occupation);
-    this.members.forEach( m => {
+    this._activePlayers.forEach( m => {
       if (m.Occupation == this.curMember.Occupation){
-        m.BoughtProducts.push(p1);
-        m.BoughtProducts.push(p2);
+        boughtProducts.forEach(p =>{
+          m.BoughtProducts.push(p);
+        });        
       }
     });
     
     //Decuct from the buyer's deposits
-    this.members[this.curMemberId].Saving -= (p1.BuyingPrice+p2.BuyingPrice);
+    //this._activePlayers[this.curMemberId].Saving -= (p1.BuyingPrice+p2.BuyingPrice);
+    let total = 0;
+    boughtProducts.forEach( p => {
+      total += p.BuyingPrice;
+    })
+    this._activePlayers[this.curMemberId].Saving -= total;    
 
     //TODO: increase the seller's deposit
-    this.upateSellerSaving(p1.Name,this.curMember.Occupation);
-    this.upateSellerSaving(p2.Name,this.curMember.Occupation);
-
-    this._tradeRules.forEach(r =>{
-      if (r.ProductName==p1.Name && r.Buyer==""){
-
-      }
+    boughtProducts.forEach( p => {
+      this.upateSellerSaving(p.Name,this.curMember.Occupation);
     })
 
+    // this._tradeRules.forEach(r =>{
+    //   if (r.ProductName==p1.Name && r.Buyer==""){
+
+    //   }
+    // })
+
     //Disable current user's button
-    this.members[this._activeButtonId].isDealDone = true;
+    this._activePlayers[this._activeButtonId].isDealDone = true;
     //Releas other buttons
     this._activeButtonId = -1;
     //TODO: Popup a modal to display the transactions that occured automaticlly according to the rules.
   }
   upateSellerSaving(productName: string, sellerName: string) {
-     console.log(this._tradeRules);
      let seller:string;
      let price:number;
 
@@ -187,7 +167,7 @@ export class Round1Component implements OnInit {
        this.merchant.Saving += price;
        this.agentBuy(seller,productName);
      }else {
-      this.members.forEach( m =>{
+      this._activePlayers.forEach( m =>{
         if (m.Occupation == seller){
           m.Saving += price;
         }
@@ -206,7 +186,7 @@ export class Round1Component implements OnInit {
       }
     });        
     
-    this.members.forEach(m =>{
+    this._activePlayers.forEach(m =>{
       if (m.Occupation == seller) {
         m.Saving +=agentBuyPrice;
       }
@@ -222,7 +202,6 @@ export class Round1Component implements OnInit {
 
   //Get price of a selected price in trading board.
   getSelectedPrice(e,elementId){    
-    console.log(e);
     document.getElementById("price"+elementId).innerText = this.getMemberBoughtItemPrice(e.value)+"";
   }
 

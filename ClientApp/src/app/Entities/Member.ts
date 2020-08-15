@@ -2,7 +2,7 @@ import { Product } from "./Product";
 
 export interface Member {
     Occupation: string;
-    Products?: Product[];
+    Products?: string[];
     Saving : number;
     BoughtProducts?: Product[];
     
