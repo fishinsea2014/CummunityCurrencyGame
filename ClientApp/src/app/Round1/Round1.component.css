@@ -62,7 +62,16 @@
     width: 100%;
 }
 
+.player:disabled {
+    background-color: darkgray;
+    color: rgb(57, 83, 5);
+
+
+}
+
 .player{
+    background-color: #338d08;
+    color: whitesmoke;
     height: 50%;
     margin: 5px;
     flex: 0 0 13rem;

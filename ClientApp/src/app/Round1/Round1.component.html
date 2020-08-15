@@ -9,8 +9,8 @@
         >
         <!-- logic of disable button: 1. is deal done 2. not selected -->
 
-          {{item.Occupation}}<br>
-          Saving: {{item.Saving}} <br>
+        <strong>{{item.Occupation}}</strong><br>
+          Balance: {{item.Saving}} <br>
           Products:
           <ng-container *ngFor="let p of item.Products">
             {{p}} ,
@@ -29,7 +29,12 @@
     <mat-card class="lender">
       <mat-card-title>Money Lender</mat-card-title>
       <mat-card-content>
-        Saving: {{moneyLender.Saving}} 
+        Saving: 500000 
+        <mat-divider></mat-divider>
+        Balance: {{_moneyLenderBalance}}
+        <mat-divider></mat-divider>
+        <button (click)="completeRound1()" mat-raised-button color="accent">Complete Round 1</button>
+        
       </mat-card-content>
     </mat-card>
     <mat-card class="board">
@@ -57,13 +62,13 @@
     <mat-card class="outsider">
       <mat-card-title>Outsider</mat-card-title>
       <mat-card-content>
-        Saving: {{outsider.Saving}} <br>
+        Balance: {{outsider.Saving}} <br>
 
       </mat-card-content>
       <mat-divider></mat-divider>
       <mat-card-title>Merchant</mat-card-title>
       <mat-card-content>
-        Saving: {{merchant.Saving}} <br>
+        Balance: {{merchant.Saving}} <br>
 
       </mat-card-content>
     </mat-card>

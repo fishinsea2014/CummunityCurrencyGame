@@ -14,7 +14,7 @@ import { MemberService } from '../Services/Member.service';
   styleUrls: ['./Round1.component.css']
 })
 export class Round1Component implements OnInit {
-
+  
   _tradeRules:TradeRule[];
   _activeButtonId : number = -1;
   tradeForm:FormGroup;
@@ -25,6 +25,7 @@ export class Round1Component implements OnInit {
     Occupation:"MoneyLender",
     Saving:500000
   };
+  _moneyLenderBalance: number;
   outsider:Member = {
     Occupation:"Outsider",
     Saving: 50000,
@@ -51,6 +52,7 @@ export class Round1Component implements OnInit {
     console.log(this._tradeRules);
     this._activePlayers = memberService.getActivePlayers();
     this.productsToChoose = tradeRulesService.getProductsToChoose();
+    this._moneyLenderBalance = this.caclateLenderBalance();
     
     this.tradeForm = this.fb.group({
       product1: new FormControl('',[
@@ -74,6 +76,19 @@ export class Round1Component implements OnInit {
   ngOnInit() {
   }
 
+  //Caculator the balance of the money lender
+  caclateLenderBalance(): number {
+    let lentMoney = 0;
+    this._activePlayers.forEach( p =>{
+      if (p.Saving<0){
+        lentMoney -= p.Saving;
+      }
+    });
+    return lentMoney+this.moneyLender.Saving;
+  }
+
+
+
   selectPlayer(event:any,index:number){
     this._activeButtonId = index;
     this.curMember=this._activePlayers[index];
@@ -84,13 +99,15 @@ export class Round1Component implements OnInit {
   getMemberBoughtItemPrice(productName):number{
     let price : number;
     this._tradeRules.forEach( r =>{
-      if (r.Buyer=="Everyone" && r.ProductName==productName){
+      if (r.Buyer != "Outsider" && r.Buyer != "Merchant" && r.ProductName==productName){
         price=r.Price;
       }
     })
     return price;
   }
   buy(tradeForm){
+    let outsider = "Outsider";
+    let merchant = "Merchant";
     var boughtItems = tradeForm.value;
     let p1:Product = {
       Name:boughtItems.product1,
@@ -115,19 +132,45 @@ export class Round1Component implements OnInit {
     let boughtProducts = [p1,p2,p3,p4,p5]
 
     console.log(this.curMember.Occupation);
+    //Logic of purchasing
     this._activePlayers.forEach( m => {
+
+      //Kee the record of the products bought 
       if (m.Occupation == this.curMember.Occupation){
         boughtProducts.forEach(p =>{
           m.BoughtProducts.push(p);
         });        
       }
+
     });
     
     //Decuct from the buyer's deposits
     //this._activePlayers[this.curMemberId].Saving -= (p1.BuyingPrice+p2.BuyingPrice);
     let total = 0;
     boughtProducts.forEach( p => {
+      //Caculate total amount of money
       total += p.BuyingPrice;
+      
+      //For every dress/shirt sell, tailer must purchase factory cloth from the outsider (purchase price of 10,000 Rp)
+      if (p.Name == "dress") {
+        this.playerBuy(p.Name,"Tailor", outsider, 10000);
+      };
+
+      //When sell a lunch (4,000 Rp), must purchase factory noodles (input) from the outsider for 2,000 Rp.     
+      if (p.Name=="lunch"){
+        this.playerBuy(p.Name, "FoodVendor",outsider,2000);
+      }
+
+      //When you sell 1 unit of cloth you have to pay the outsider 3,000 Rp for factory thread and chemical dye
+      if (p.Name=="traditionalCloth"){
+        this.playerBuy(p.Name, "factoryThreadChemicalDye",outsider,3000);
+      }
+      //When you sell your "service" (repair engines), you have to buy engine parts from the outsider
+      // (price =7,000 Rp).
+      if (p.Name=="fixEngine"){
+        this.playerBuy(p.Name, "engineParts",outsider,7000);
+      }
+
     })
     this._activePlayers[this.curMemberId].Saving -= total;    
 
@@ -146,8 +189,29 @@ export class Round1Component implements OnInit {
     this._activePlayers[this._activeButtonId].isDealDone = true;
     //Releas other buttons
     this._activeButtonId = -1;
+    //Update the money lender's balance.
+    this._moneyLenderBalance = this.caclateLenderBalance();
+
     //TODO: Popup a modal to display the transactions that occured automaticlly according to the rules.
   }
+  playerBuy(product,buyer:string, seller:string,price:number){
+    //Deduct buyer's saving
+    this._activePlayers.forEach( p =>{
+      if (p.Occupation == buyer){
+        p.Saving -= price;
+      }
+    });
+
+    //Increase seller's saving
+    if (seller=this.outsider.Occupation){
+      this.outsider.Saving +=price;
+    }
+
+    //TODO: record the deal
+    console.log(`${buyer} buy ${product} from ${seller} by ${price}.`);
+  }
+
+
   upateSellerSaving(productName: string, sellerName: string) {
      let seller:string;
      let price:number;
@@ -205,8 +269,25 @@ export class Round1Component implements OnInit {
     document.getElementById("price"+elementId).innerText = this.getMemberBoughtItemPrice(e.value)+"";
   }
 
+  
+
   //Cancel current deal
   cancelDeal(){
     this._activeButtonId = -1;
+  }
+
+  completeRound1(){
+    console.log("complete");
+    let interest = 0;
+    this._activePlayers.forEach(p =>{
+      //Handle the money lent
+      if (p.Saving < 0){
+
+        p.Saving += p.Saving *0.1;
+        interest += -p.Saving *0.1;
+      }
+    })
+    this._moneyLenderBalance += interest;
+    this.moneyLender.Saving= this._moneyLenderBalance;
   }
 }

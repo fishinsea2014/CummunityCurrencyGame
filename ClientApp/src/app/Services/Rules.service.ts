@@ -195,7 +195,7 @@ export class RulesService {
   getProductsToChoose():string[] {
     let products : string[] = [];
     this.rules.forEach( r => {
-      if (r.Buyer == "Everyone"){
+      if (r.Buyer != "Outsider" && r.Buyer != "Merchant"){
         products.push(r.ProductName);
       }
     });
