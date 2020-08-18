@@ -1,17 +1,17 @@
 <div class="container">
-  <div class="page-title"> <h1>Round2</h1></div>
+  <div class="page-title">
+    <h1>Round2</h1>
+  </div>
   <div class="top">
     <div class="players">
-      <ng-container *ngFor="let item of _activePlayers; let i = index">
-        <button mat-raised-button class="player"
-          (click)="selectPlayer($event,i)" 
-          id="i"           
-          [disabled] = "(_activeButtonId==-1 && !item.isDealDone) ? false :(item.isDealDone || !(_activeButtonId==i))"
-        >
-        <!-- logic of disable button: 1. is deal done 2. not selected -->
+      <ng-container *ngFor="let item of _activePlayersR2; let i = index">
+        <button mat-raised-button class="player" (click)="selectPlayer($event,i)" id="i"
+          [disabled]="(_activeButtonId==-1 && !item.isDealDone) ? false :(item.isDealDone || !(_activeButtonId==i))">
+          <!-- logic of disable button: 1. is deal done 2. not selected -->
 
-        <strong>{{item.Occupation}}</strong><br>
-          Balance: {{item.Saving}} <br>
+          <strong>{{item.Occupation}}</strong><br>
+          Balance(Rp): {{item.Saving}} <br>
+          Balance(CC): {{item.SavingCC}} <br>
           Products:
           <ng-container *ngFor="let p of item.Products">
             {{p}} ,
@@ -22,7 +22,7 @@
           </ng-container>
 
         </button>
-        
+
       </ng-container>
     </div>
   </div>
@@ -30,12 +30,34 @@
     <mat-card class="lender">
       <mat-card-title>Money Lender</mat-card-title>
       <mat-card-content>
-        Saving: 500000 
+        <h6> Saving: 500000</h6>
         <mat-divider></mat-divider>
-        Balance: {{_moneyLenderBalance}}
+        <h6>Balance: {{_moneyLenderBalance}}</h6>
         <mat-divider></mat-divider>
-        <button (click)="completeRound1()" mat-raised-button color="accent">Complete Round 1</button>
+        <button (click)="completeRound2()" mat-raised-button color="accent">Complete Round 2</button>
+      </mat-card-content>
+      <mat-card-content>
+        <h4>Community Currency Bank</h4>
+        <p>Balance: {{_ccBank.balance}}</p>
+        <mat-divider></mat-divider>
+        <h6>Loan Record</h6>
+        <table>
+          <tbody>
+            <tr>
+              <th>Borrower</th>
+              <th>Amount</th>
+            </tr>
+            <ng-container *ngFor="let item of _ccBank.LoanRecord">
+              <tr>
+                <td>{{item.Borrower}}</td>
+                <td>{{item.Amount}}</td>
+              </tr>
+            </ng-container>
+            
+          </tbody>
+        </table>
         
+
       </mat-card-content>
     </mat-card>
     <mat-card class="board">
@@ -46,30 +68,36 @@
           <ng-container *ngFor="let item of [1,2,3,4,5]">
             <mat-list>
               <mat-list-item id="product{{item}}">
+                <mat-form-field appearance="fill">
+                <mat-label>Select a product</mat-label>
                 <mat-select formControlName="product{{item}}" (selectionChange)="getSelectedPrice($event,item)">
                   <mat-option *ngFor="let p of productsToChoose" value="{{p}}" placehold="Select a product">
                     {{p}}
-                  </mat-option> 
+                  </mat-option>
                 </mat-select>
-                <p id="price{{item}}"></p>
+              </mat-form-field>
+                <p id="price{{item}}">Price</p>               
+
               </mat-list-item>
             </mat-list>
           </ng-container>
-          <button mat-raised-button color="warn" >Confirm Buy</button>          
+          <button mat-raised-button color="warn">Confirm Buy</button>
         </form>
-        <button mat-raised-button (click)="cancelDeal()" color="basic" >cancel</button>
+        <button mat-raised-button (click)="cancelDeal()" color="basic">cancel</button>
       </mat-card-content>
     </mat-card>
     <mat-card class="outsider">
       <mat-card-title>Outsider</mat-card-title>
       <mat-card-content>
-        Balance: {{outsider.Saving}} <br>
+        Balance(Rp): {{outsider.Saving}} <br>
+        Balance(CC): {{outsider.SavingCC}} 
 
       </mat-card-content>
       <mat-divider></mat-divider>
       <mat-card-title>Merchant</mat-card-title>
       <mat-card-content>
-        Balance: {{merchant.Saving}} <br>
+        Balance(Rp): {{merchant.Saving}} <br>
+        Balance(CC): {{merchant.SavingCC}}
 
       </mat-card-content>
     </mat-card>

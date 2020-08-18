@@ -50,7 +50,7 @@ export class Round1Component implements OnInit {
   {
     this._tradeRules=tradeRulesService.getAllRules();
     console.log(this._tradeRules);
-    this._activePlayers = memberService.getActivePlayers();
+    this._activePlayers = memberService.getActivePlayersR1();
     this.productsToChoose = tradeRulesService.getProductsToChoose();
     this._moneyLenderBalance = this.caclateLenderBalance();
     
@@ -93,8 +93,12 @@ export class Round1Component implements OnInit {
     this._activeButtonId = index;
     this.curMember=this._activePlayers[index];
     this.curMemberId = index;
-    //TODO:disable other players' button
   }
+
+  // handelSelectPlayer(selectedId:number){
+  //   this.curMember=this._activePlayers[selectedId];
+  //   this.curMemberId = selectedId;
+  // }
 
   getMemberBoughtItemPrice(productName):number{
     let price : number;
@@ -266,7 +270,7 @@ export class Round1Component implements OnInit {
 
   //Get price of a selected price in trading board.
   getSelectedPrice(e,elementId){    
-    document.getElementById("price"+elementId).innerText = this.getMemberBoughtItemPrice(e.value)+"";
+    document.getElementById("price"+elementId).innerText = this.getMemberBoughtItemPrice(e.value)+" Rp";
   }
 
   

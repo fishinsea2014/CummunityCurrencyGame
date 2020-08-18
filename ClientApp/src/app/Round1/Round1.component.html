@@ -2,13 +2,18 @@
   <div class="page-title"> <h1>Round1</h1></div>
   <div class="top">
     <div class="players">
+      <!-- <app-players-list 
+        [_activePlayers]="_activePlayers"
+        [_activeButtonId] = "_activeButtonId"
+        (playerSelected) = "handelSelectPlayer($event)"
+      ></app-players-list> -->
       <ng-container *ngFor="let item of _activePlayers; let i = index">
         <button mat-raised-button class="player"
           (click)="selectPlayer($event,i)" 
           id="i"           
           [disabled] = "(_activeButtonId==-1 && !item.isDealDone) ? false :(item.isDealDone || !(_activeButtonId==i))"
         >
-        <!-- logic of disable button: 1. is deal done 2. not selected -->
+        <!-- logic of disable button: 1. is deal done 2. not selected  -->
 
         <strong>{{item.Occupation}}</strong><br>
           Balance: {{item.Saving}} <br>
@@ -30,9 +35,9 @@
     <mat-card class="lender">
       <mat-card-title>Money Lender</mat-card-title>
       <mat-card-content>
-        Saving: 500000 
+        <h6> Saving: 500000</h6>
         <mat-divider></mat-divider>
-        Balance: {{_moneyLenderBalance}}
+        <h6>Balance: {{_moneyLenderBalance}}</h6>
         <mat-divider></mat-divider>
         <button (click)="completeRound1()" mat-raised-button color="accent">Complete Round 1</button>
         
@@ -46,11 +51,16 @@
           <ng-container *ngFor="let item of [1,2,3,4,5]">
             <mat-list>
               <mat-list-item id="product{{item}}">
+
+                <mat-form-field appearance="fill">
+                <mat-label>Select a product</mat-label>
                 <mat-select formControlName="product{{item}}" (selectionChange)="getSelectedPrice($event,item)">
                   <mat-option *ngFor="let p of productsToChoose" value="{{p}}" placehold="Select a product">
                     {{p}}
                   </mat-option> 
                 </mat-select>
+              </mat-form-field>
+
                 <p id="price{{item}}"></p>
               </mat-list-item>
             </mat-list>

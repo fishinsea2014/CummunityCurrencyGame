@@ -1,0 +1,22 @@
+<ng-container *ngFor="let item of _activePlayers; let i = index">
+  <button mat-raised-button class="player"
+    (click)="selectPlayer($event,i)" 
+    id="i"           
+    [disabled] = "(_activeButtonId==-1 && !item.isDealDone) ? false :(item.isDealDone || !(_activeButtonId==i))"
+  >
+  <!-- logic of disable button: 1. is deal done 2. not selected -->
+
+  <strong>{{item.Occupation}}</strong><br>
+    Balance: {{item.Saving}} <br>
+    Products:
+    <ng-container *ngFor="let p of item.Products">
+      {{p}} ,
+    </ng-container><br>
+    Bought Products:
+    <ng-container *ngFor="let p of item.BoughtProducts">
+      {{p.Name}} ,
+    </ng-container>
+
+  </button>
+  
+</ng-container>
